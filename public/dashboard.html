@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewp.ort" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div>
+        <input type="text" id="inp_question">
+    </div>
+    <div>
+        <textarea name="" id="inp_options" cols="30" rows="10"></textarea>
+    </div>
+    <div>
+        <button id="btn_start">Start</button>
+    </div>
+    <ul id="votes">
+
+    </ul>
+
+    <script defer>
+        const socket = io();
+
+        const inp_question = document.querySelector('#inp_question');
+        const inp_options = document.querySelector('#inp_options');
+        const btn_start = document.querySelector('#btn_start');
+        const ul_votes = document.querySelector('ul#votes');
+
+        const start = () => {
+            socket.emit('ask', {
+                question: inp_question.value,
+                options: inp_options.value.split('\n').filter(o => o)
+            });
+        }
+
+        let votes = {};
+        socket.on('answer', (vote) => {
+            votes[vote]
+                ? votes[vote]++
+                : votes[vote] = 1;
+
+            ul_votes.innerHTML = Object.entries(votes).map(([name, votes]) => `<li>${name} - ${votes}</li>`)
+        });
+
+        btn_start.addEventListener('click', start);
+    </script>
+</body>
+</html>

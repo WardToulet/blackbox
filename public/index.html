@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewp.ort" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <section id="question">
+        Wacht op de volgende vraag
+    </section>
+    <section id="vote"></section>
+    <section id="options"></section>
+
+    <script defer>
+        const socket = io();
+
+
+        const section_question = document.querySelector('section#question');
+        const section_options = document.querySelector('section#options');
+        const section_vote = document.querySelector('section#vote');
+
+        const set_question = ({question, options}) => {
+            section_question.innerHTML = `<h1>${question}</h1>`;
+            section_options.innerHTML = options.map(o => `
+                <button onclick="vote('${o}')">${o}</button>
+            `).join('');
+        }
+
+        const vote = (option) => {
+            console.log(option);
+            section_options.innerHTML = '';
+            section_vote.innerHTML = `Jij stemde ${option}`;
+            socket.emit('answer', option);
+        };
+
+        socket.on('ask', set_question);
+
+        console.log(section_question, section_options);
+    </script>
+</body>
+</html>
